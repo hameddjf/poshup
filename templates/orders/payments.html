@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_tags %}
+
+{% block main %}
+
+<style>
+  img {
+    vertical-align: middle;
+    border-style: none;
+    float: left;
+  }
+  .colorful:nth-child(odd) {
+      color: dodgerblue;
+  }
+  
+  .colorful:nth-child(even) {
+      color: coral;
+  }
+
+  .direction {
+    direction: rtl; 
+    text-align: right; 
+    background-color: #f8f9fa; 
+    border: 1px solid #ddd; 
+    padding: 10px; 
+    border-radius: 5px;
+  }
+
+  .custom-label {
+    text-align: left; 
+    display: block;
+    margin-left: auto;
+    margin-right: auto; 
+    width: fit-content;
+  }
+
+.form-control {
+    width: 100%;}
+
+    .custom-checkbox-icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      position: relative;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    
+    .custom-checkbox-icon-outline {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+    
+    .custom-checkbox-icon-check {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .custom-control-input:checked ~ .custom-control-label .custom-checkbox-icon-outline {
+      opacity: 0;
+    }
+    
+    .custom-control-input:checked ~ .custom-control-label .custom-checkbox-icon-check {
+      opacity: 1;
+    }
+</style>
+<h4 class=" mb-10 text-center"> سفارش خود را بررسی کنید و پرداخت کنید</h4>
+    <!-- Cart Start -->
+      <div class="direction row px-xl-5">
+        <div class="col-lg-8 table-responsive mb-5">
+            <div class="card">
+                <div class="card-header">
+                    مشخصات گیرنده
+                </div>
+                <div class="card-body">
+                  <p class="card-text mb-0">نام و نام خوانوادگی: {{order.full_name}}</p>
+                  <p class='card-text mb-0'>ادرس تحویل: {{order.address_line_1}}</p>
+                  <p class='card-text mb-0'>ایمیل: {{order.email}}</p>
+                  <p class='card-text mb-0'>شماره تماس: {{order.phone}}</p>
+                  {% comment %} {% if order.order_note %}
+                      <b>Order Note:</b> {{order.order_note}}
+                  {% endif %} {% endcomment %}
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                    روش پرداخت
+                </div>
+                <div class="card-body">
+                  <div class="form-group form-check mb-4">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" class="custom-control-input" id="zarinpal-checkbox">
+                      <label class="custom-control-label d-flex align-items-center" for="zarinpal-checkbox">
+                        <span class="custom-checkbox-icon mr-2">
+                          <svg class="custom-checkbox-icon-outline" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#0062FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                          <svg class="custom-checkbox-icon-check" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#0062FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M8 12L11 15L16 9" stroke="#0062FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                        </span>
+                        <span class="text-primary font-weight-bold">IDPAY</span>
+                      </label>
+                    </div>
+                  </div>
+              </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                    بررسی محصولات
+                </div>
+                  <div class="card-body">
+                      <table class="table table-light table-borderless table-hover text-center mb-0">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>محصولات</th>
+                                <th>قیمت</th>
+                                <th>تعداد</th>
+                                <th>قیمت کل</th>
+                            </tr>
+                        </thead>
+                        <tbody class="align-middle">
+                            {% for cart_item in cart_items %}
+                                <tr>
+                                    <td class="align-middle">
+                                        <img src="{{cart_item.product.image.url}}" alt="" style="width: 50px;" /> 
+                                        <figcaption class='info'>
+                                            <a href='{{ cart_item.product.get_url }}' class='text-muted small'>
+                                                <strong class="colorful">{{cart_item.product.title}}</strong>
+                                            </a>
+                                            <p class='text-muted small'>
+                                                {% if cart_item.variations.all %}
+                                                    {% for item in cart_item.variations.all %}
+                                                        {{ item.variation_category | capfirst }} : {{ item.variation_value | capfirst }}<br>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </p>
+                                        </figcaption>
+                                    </td>
+                                    {% if cart_item.product.discount == 0 %}
+                                        <td class="align-middle">{{cart_item.product.price|format_price}}</td>
+                                    {% else %}
+                                        <td class="align-middle">{{cart_item.product.discount_price|format_price}}</td>
+                                    {% endif %}
+                                    <td class="align-middle">
+                                        <div class="input-group quantity mx-auto" style="width: 100px;">
+                                            <label class="custom-label">{{cart_item.quantity}}</label>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">{{cart_item.sub_total|format_price}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+        </div>
+        <!-- در فایل payments.html -->
+        <div class="col-lg-4">
+          {% comment %} <div class="input-group">
+            <input type="text" class="form-control border-0 p-4 floatformat : right" placeholder="کد کوپون" name="coupon_code" />
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="button" id="apply-coupon">اعمال کوپون</button>
+            </div>
+          </div> {% endcomment %}
+          <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">خلاصه سبد خرید</span></h5>
+          <div class="bg-light p-30 mb-5">
+            <div class="border-bottom pb-2">
+                {% if 'coupon_code' in request.session %}
+                  {% comment %} <div class="d-flex justify-content-between mb-3">
+                      <h6>قیمت کل </h6>
+                      <h5>{{ total_price|format_price }}</h5>
+                  </div> {% endcomment %}
+
+                  {% if request.session.discount_percent > 0 %}
+                    <div class="d-flex justify-content-between">
+                        <h6 class="font-weight-medium" >تخفیف کوپن: </h6>
+                        <h6> {{ request.session.coupon_code }} ({{ request.session.discount_percent }}%)</h6>
+                    </div>
+                  {% endif %}
+
+                {% else %}
+                  <div class="d-flex justify-content-between mb-3">
+                      <h6>قیمت کل</h6>
+                      <h5>{{ order_total|format_price }}</h5>
+                  </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between">
+                    <h6 class="font-weight-medium">مالیات</h6>
+                    <h6 class="font-weight-medium">{{ tax|format_price }}</h6>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                  <h5> مجموع کل قابل پرداخت</h5>
+                  {% if 'coupon_code' in request.session %}
+                    <h5>{{ request.session.total_price_with_coupon|format_price }}</h5>
+                  {% else %}
+                    <h5>{{ grand_total|format_price }}</h5>
+                  {% endif %}
+                </div>
+                <div id="payment-button-container">
+                  <button type="submit" class="btn btn-block btn-primary font-weight-bold my-3 py-3" id="payment-button" disabled>پرداخت</button>
+                  <a href="{% url "order:go_to_gateway" %}" class="btn btn-block btn-primary font-weight-bold my-3 py-3 d-none" id="payment-button-link">پرداخت</a>
+                </div>
+                
+                <script>
+                  const zarinpalCheckbox = document.getElementById('zarinpal-checkbox');
+                  const paymentButton = document.getElementById('payment-button');
+                  const paymentButtonLink = document.getElementById('payment-button-link');
+                
+                  zarinpalCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                      paymentButton.disabled = false;
+                      paymentButton.classList.add('active');
+                      paymentButton.classList.add('d-none');
+                      paymentButtonLink.classList.remove('d-none');
+                    } else {
+                      paymentButton.disabled = true;
+                      paymentButton.classList.remove('active');
+                      paymentButton.classList.remove('d-none');
+                      paymentButtonLink.classList.add('d-none');
+                    }
+                  });
+                </script>
+            </div>
+          </div>
+      </div>
+    </div>
+    <!-- Cart End -->
+
+{% endblock main %}

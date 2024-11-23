@@ -1,0 +1,550 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_tags %}
+{% load like_tags %}
+
+
+{% block main %}
+
+<style>
+  @media (min-width: 992px) {
+    .col-lg-5 {
+        flex: 25%;
+        max-width: 25%;
+    }
+}
+@media (min-width: 992px) {
+  .col-lg-7 {
+      flex: 70%;
+      max-width: 70%;
+  }
+}
+  .quantity {
+    display: flex;
+    align-items: center;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    padding: 5px 10px;
+  }
+  
+  .quantity .btn {
+    background-color: transparent;
+    color: #333;
+    border: none;
+  }
+  
+
+  
+  .quantity .form-control {
+    text-align: center;
+    border: none;
+    background-color: transparent;
+  }
+  
+
+  .p-30 {
+    padding: 30px;
+    direction: rtl;
+  }
+
+  .px-3 {
+    
+    background-color: #007bff;
+}
+
+
+.quantity button {
+  width: 38px; /* عرض دکمه‌ها */
+}
+
+
+.margin {
+  min-width: 200px;
+  border-radius: 20px;
+  height: 40px;
+}
+
+
+
+.custom-margin {
+  margin-right: 60px;
+  height: 35px;
+  border-radius: 30px;
+}
+.tab-pane {
+  max-height: 300px; 
+  overflow-y: auto; 
+}
+.swiper-slide {
+  height: auto;
+}
+
+
+
+
+.owl-carousel .owl-stage-outer {
+  direction: ltr;
+}
+
+.text-center {
+  direction: rtl !important;
+}
+
+
+                  body {
+                      font-family: 'Vazirmatn', sans-serif;
+                      background-color: #f4f4f4;
+                      color: #333;
+                      line-height: 1.6;
+                  }
+                  .container {
+                      max-width: 800px;
+                      margin: 2rem auto;
+                      padding: 2rem;
+                      background-color: #fff;
+                      border-radius: 10px;
+                      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                  }
+                  .row {
+                      display: flex;
+                      flex-wrap: wrap;
+                      margin-bottom: 1.5rem;
+                  }
+                  .col-12 {
+                      flex: 0 0 100%;
+                      max-width: 100%;
+                  }
+                  .col-md-6 {
+                      flex: 0 0 50%;
+                      max-width: 50%;
+                  }
+                  .d-flex {
+                      display: flex;
+                  }
+                  .align-items-center {
+                      align-items: center;
+                  }
+                  .justify-content-start {
+                      justify-content: flex-start;
+                  }
+                  .text-dark {
+                      color: #333;
+                      font-weight: bold;
+                      margin-left: 0.5rem;
+                  }
+                  .form-control {
+                      display: block;
+                      width: 100%;
+                      padding: 0.5rem;
+                      font-size: 1rem;
+                      line-height: 1.5;
+                      color: #495057;
+                      background-color: #fff;
+                      background-clip: padding-box;
+                      border: 1px solid #ced4da;
+                      border-radius: 0.25rem;
+                      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+                  }
+                  .form-control:focus {
+                      color: #495057;
+                      background-color: #fff;
+                      border-color: #80bdff;
+                      outline: 0;
+                      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                  }
+                  .btn {
+                      display: inline-block;
+                      font-weight: 400;
+                      text-align: center;
+                      vertical-align: middle;
+                      user-select: none;
+                      border: 1px solid transparent;
+                      padding: 0.375rem 0.75rem;
+                      font-size: 1rem;
+                      line-height: 1.5;
+                      border-radius: 0.25rem;
+                      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+                  }
+                  .btn-light {
+                      color: #212529;
+                      background-color: #f8f9fa;
+                      border-color: #f8f9fa;
+                  }
+
+                  .btn-primary:hover {
+                      background-color: #00e3d0;
+                      border-color: #00e3d0;
+                  }
+                  .quantity {
+                      display: flex;
+                      align-items: center;
+                      margin-left: 1rem;
+                  }
+                  .quantity input {
+                      width: 50px;
+                      text-align: center;
+                      margin: 0 0.5rem;
+                  }
+                  .out-of-stock {
+                      color: #dc3545;
+                      font-weight: bold;
+                  }
+                  @media (max-width: 768px) {
+                      .col-md-6 {
+                          flex: 0 0 100%;
+                          max-width: 100%;
+                      }
+                      .container {
+                          padding: 1rem;
+                      }
+                      .quantity {
+                          margin-bottom: 1rem;
+                      }
+                  }
+</style>
+
+
+    <!-- Shop Detail Start -->
+    <div class="container-fluid pb-5">
+      <div class="row px-xl-5">
+
+        <div class="col-lg-5 mb-30">
+          <div id="product-carousel" class="carousel slide" data-ride="carousel">
+            <!-- نمایش تصویر اصلی محصول -->
+            <div class="carousel-inner bg-light mainImage">
+              <div class="carousel-item active">
+                <img class="d-block w-100" src="{{ single_product.image.url }}" alt="{{ single_product.title }}" />
+              </div>
+            </div>
+            <ul class="thumb list-unstyled">
+              <!-- نمایش تصویر اصلی محصول در لیست تصاویر کوچک -->
+              {% comment %} <li class="list-inline-item">
+                <a href="{{ single_product.image.url }}">
+                  <img src="{{ single_product.image.url }}" alt="{{ single_product.title }}">
+                </a>
+              </li> {% endcomment %}
+              <!-- حلقه برای نمایش تصاویر موجود در گالری محصول -->
+              {% for gallery_item in product_gallery %}
+              <li class="list-inline-item">
+                <a href="{{ gallery_item.image.url }}">
+                  <img src="{{ gallery_item.image.url }}" alt="{{ single_product.title }}">
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        
+        
+
+        <form action="{% url 'cart:add_to_cart_page' single_product.id %}" method='POST' class="col-lg-7 h-auto mb-30">
+          {% csrf_token %}
+          <article >
+            <div class="h-100 bg-light p-30">
+              <h3>{{single_product.title}}</h3>
+              
+              <div class="d-flex mb-3">
+                <div class="rating-star text-right" style='direction:ltr'>
+                  <span>
+                    <i class="fa fa-star{% if single_product.averageReview < 0.5 %}-o{% elif single_product.averageReview >= 0.5 and single_product.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if single_product.averageReview < 1.5 %}-o{% elif single_product.averageReview >= 1.5 and single_product.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if single_product.averageReview < 2.5 %}-o{% elif single_product.averageReview >= 2.5 and single_product.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if single_product.averageReview < 3.5 %}-o{% elif single_product.averageReview >= 3.5 and single_product.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if single_product.averageReview < 4.5 %}-o{% elif single_product.averageReview >= 4.5 and single_product.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
+                  </span>
+                </div>
+                <small class="pt-1">(<span>{{single_product.countReview}} </span> : بررسی ها)</small>
+              </div>
+              {% if single_product.discount == 0 %}
+                <h3>{{ single_product.price|format_price }}</h3>
+              {% endif %}
+              {% if single_product.discount > 0 %}
+              <h3>{{ single_product.discount_price|format_price }}</h3>
+                <h5><del>{{ single_product.price|format_price }}</del></h5>
+                <h6>  %{{single_product.discount}} تخفیف </h6>
+              {% endif %}
+              {% comment %} <h3 class="font-weight-semi-bold mb-4">${{single_product.price}}</h3> {% endcomment %}
+              <p class="mb-4">{{ single_product.concise }}</p>
+              <hr>
+              
+                <style>
+
+              </style>
+
+              <div class="container">
+                  <div class="row">
+                      <div class="col-12 col-md-6">
+                        <div class="d-flex align-items-center">
+                          <strong class="text-dark mr-3">رنگ:</strong>
+                          <select name='color' class='form-control mr-3' style='min-width: 150px;' required>
+                            <option value='' disabled selected>انتخاب رنگ</option>
+                            {% for variation in color_variations %}
+                              <option value='{{ variation.variation_value | lower }}'>{{ variation.variation_value | capfirst }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                          <div class="d-flex align-items-center">
+                              <strong class="text-dark">اندازه:</strong>
+                              <select name='size' class='form-control' style='min-width: 150px;' required>
+                                  <option value='' disabled selected>انتخاب اندازه</option>
+                                  {% for variation in size_variations %}
+                                      <option value='{{ variation.variation_value | lower }}'>{{ variation.variation_value | capfirst }}</option>
+                                  {% endfor %}
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row align-items-center">
+                      <div class="col-md-6">
+                          {% if single_product.stock >= 1 %}
+                              <form action="{% url 'cart:add_to_cart_page' single_product.id %}" method="post">
+                                  {% csrf_token %}
+                                  <div class="d-flex align-items-center justify-content-start">
+                                      <div class="quantity">
+                                          <button type="button" class="btn btn-light btn-minus">
+                                              <i class="fa fa-minus"></i>
+                                          </button>
+                                          <input name="quantity" class="form-control" value="1" min="1" max="{{ single_product.stock }}">
+                                          <button type="button" class="btn btn-light btn-plus">
+                                              <i class="fa fa-plus"></i>
+                                          </button>
+                                      </div>
+                                      <button type="submit" class="btn btn-primary">
+                                          <i class="fa fa-shopping-cart"></i> اضافه کردن به سبد خرید
+                                      </button>
+                                  </div>
+                              </form>
+                          {% else %}
+                              <h5 class="out-of-stock">
+                                  😔 اتمام موجودی ❌
+                              </h5>
+                          {% endif %}
+                      </div>
+                      
+                  </div>
+                  <div class="d-flex pt-2">
+                    <strong class="text-dark mr-2">اشتراک گزاری :</strong>
+                    <div class="d-inline-flex">
+                      <a class="text-dark px-2" href=""><i class="fab fa-facebook-f"></i></a>
+                      <a class="text-dark px-2" href=""><i class="fab fa-twitter"></i></a>
+                      <a class="text-dark px-2" href=""><i class="fab fa-linkedin-in"></i></a>
+                      <a class="text-dark px-2" href=""><i class="fab fa-pinterest"></i></a>
+                    </div>
+                  </div> 
+              </div>
+          
+              <script>
+                  // JavaScript for increment and decrement buttons
+                  document.addEventListener('DOMContentLoaded', function() {
+                      const minusBtn = document.querySelector('.btn-minus');
+                      const plusBtn = document.querySelector('.btn-plus');
+                      const quantityInput = document.querySelector('input[name="quantity"]');
+          
+                      minusBtn.addEventListener('click', function() {
+                          let value = parseInt(quantityInput.value);
+                          if (value > 1) {
+                              quantityInput.value = value - 0;
+                          }
+                      });
+          
+                      plusBtn.addEventListener('click', function() {
+                          let value = parseInt(quantityInput.value);
+                          let max = parseInt(quantityInput.getAttribute('max'));
+                          if (value < max) {
+                              quantityInput.value = value + 0;
+                          }
+                      });
+                  });
+              </script>
+              </div>
+              
+
+              
+            </div>
+          </article>
+        </form>
+
+
+      </div>
+      <div class="row px-xl-5">
+        <div class="col">
+          <div class="bg-light p-30">
+            <div class="nav nav-tabs mb-4">
+              <a class="nav-item nav-link text-dark active" data-toggle="tab" href="#tab-pane-1">توضیحات</a>
+              {% comment %} <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-2">جزئیات کامل</a> {% endcomment %}
+              <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-3">نظرات <span>{{single_product.countReview}} </span></a>
+            </div>
+            <div class="tab-content">
+              <div class="tab-pane fade show active" id="tab-pane-1">
+                <h4 class="mb-3">توضیحات محصول</h4>
+                <p>{{single_product.description}}.</p>
+              </div>
+              {% comment %} <div class="tab-pane fade" id="tab-pane-2">
+                <h4 class="mb-3">جزئیات محصول</h4>
+                <p>{{single_product.information}}.</p>
+              </div> {% endcomment %}
+              <div class="tab-pane fade" id="tab-pane-3">
+
+                <div class="row">
+                  <div class="col-md-12 direction">
+                    <form action="{% url 'submit_review_page' single_product.id %}" method="POST">
+                      {% csrf_token %}
+                      <h4 class="text-right">نظر خود را بنویسید</h4>
+                      {% comment %} {{single_product.averageReview}} {% endcomment %}
+                      <div class="rating-star text-right" style='direction:ltr'>
+                        <span>
+                          <i class="fa fa-star{% if single_product.averageReview < 0.5 %}-o{% elif single_product.averageReview >= 0.5 and single_product.averageReview < 1 %}-half-o {% endif %}" aria-hidden="true"></i>
+                          <i class="fa fa-star{% if single_product.averageReview < 1.5 %}-o{% elif single_product.averageReview >= 1.5 and single_product.averageReview < 2 %}-half-o {% endif %}" aria-hidden="true"></i>
+                          <i class="fa fa-star{% if single_product.averageReview < 2.5 %}-o{% elif single_product.averageReview >= 2.5 and single_product.averageReview < 3 %}-half-o {% endif %}" aria-hidden="true"></i>
+                          <i class="fa fa-star{% if single_product.averageReview < 3.5 %}-o{% elif single_product.averageReview >= 3.5 and single_product.averageReview < 4 %}-half-o {% endif %}" aria-hidden="true"></i>
+                          <i class="fa fa-star{% if single_product.averageReview < 4.5 %}-o{% elif single_product.averageReview >= 4.5 and single_product.averageReview < 5 %}-half-o {% endif %}" aria-hidden="true"></i>
+                        </span>
+                      </div>
+                      <div>
+                        {% include "alerts/alerts.html" %}
+                        <div class="form-group text-right">
+                          <label>این محصول را چگونه ارزیابی می کنید؟</label>
+                          <br>
+                          <div class="rate" style='direction:ltr'>
+                            <input type="radio" name="rating" id="rating10" value="5" required />
+                            <label for="rating10" title="5"></label>
+                            <input type="radio" name="rating" id="rating9" value="4.5" required />
+                            <label for="rating9" title="4.5" class="half"></label>
+                            <input type="radio" name="rating" id="rating8" value="4" required />
+                            <label for="rating8" title="4"></label>
+                            <input type="radio" name="rating" id="rating7" value="3.5" required />
+                            <label for="rating7" title="3.5" class="half"></label>
+                            <input type="radio" name="rating" id="rating6" value="3" required />
+                            <label for="rating6" title="3"></label>
+                            <input type="radio" name="rating" id="rating5" value="2.5" required />
+                            <label for="rating5" title="2.5" class="half"></label>
+                            <input type="radio" name="rating" id="rating4" value="2" required />
+                            <label for="rating4" title="2"></label>
+                            <input type="radio" name="rating" id="rating3" value="1.5" required />
+                            <label for="rating3" title="1.5" class="half"></label>
+                            <input type="radio" name="rating" id="rating2" value="1" required />
+                            <label for="rating2" title="1"></label>
+                            <input type="radio" name="rating" id="rating1" value="0.5" required />
+                            <label for="rating1" title="0.5" class="half"></label>
+                          </div>
+                        </div>
+                        <div class="form-group text-right">
+                         عنوان  :
+                          <input type="text" class="form-control" name="subject">
+                        </div>
+                        <div class="form-group text-right">
+                          لطفا نظر خود را بنویسید :
+                          <textarea name="review" rows="4" class="form-control"></textarea>
+                        </div>
+                        {% if user.is_authenticated %}
+                          {% comment %} {% if orderproduct %} {% endcomment %}
+                            <input type="submit" value="Submit Review" class="btn btn-primary">
+                          {% comment %} {% else %} {% endcomment %}
+                            <p>برای ارسال نظر باید این محصول را خریداری کرده باشید.</p>
+                          {% comment %} {% endif %} {% endcomment %}
+                        {% else %}
+                        <p>برای ارسال نظر باید لاگین کرده باشید .<span><a style='color: #3872e0; font-weight: bold;' href="{% url 'account:login_page' %}">اکنون وارد شوید</a></span></p>
+                        {% endif %}
+                      </div>
+                    </form>
+                    <br>
+
+                    <h3 class="text-right">نظرات مشتریان</h3>
+                    {% for review in reviews %}
+                    <div class="card mb-3">
+                      <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                          <h5 class="card-title text-right">{{ review.user.full_name }}</h5>
+                          <small class="text-muted text-left">{{ review.updated_at }}</small>
+                        </div>
+                        <div class="rating-star text-right" style='direction:ltr'>
+                          <span>
+                            <i class="fa fa-star{% if review.rating == 0.5 %}-half-o{% elif review.rating < 1 %}-o {% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if review.rating == 1.5 %}-half-o{% elif review.rating < 2 %}-o {% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if review.rating == 2.5 %}-half-o{% elif review.rating < 3 %}-o {% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if review.rating == 3.5 %}-half-o{% elif review.rating < 4 %}-o {% endif %}" aria-hidden="true"></i>
+                            <i class="fa fa-star{% if review.rating == 4.5 %}-half-o{% elif review.rating < 5 %}-o {% endif %}" aria-hidden="true"></i>
+                          </span>
+                          <h5>{{review.subject}} </h5>
+                        </div>
+                        <p class="card-text mb-2">{{ review.review }}</p>
+                      </div>
+                    </div>
+                    {% endfor %}
+                    
+                  </div>
+                </div>
+                  <!-- col.// --> 
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Shop Detail End -->
+
+    <!-- Products Start -->
+    <div class="container-fluid py-5" >
+      <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">ممکنه بپسندید</span></h2>
+      <div class="row px-xl-5">
+        <div class="col">
+          <div class="owl-carousel related-carousel" >
+            {% for related_product in related_products %}
+            <div class="product-item bg-light" >
+              <div class="product-img position-relative overflow-hidden" >
+                <img class="img-fluid w-100" src="{{ related_product.image.url }}" alt="{{ related_product.title }}" />
+                <div class="product-action">
+                  <a class="btn btn-outline-dark btn-square" href="{% url 'cart:add_to_cart_page' single_product.id %}">
+                    <i class="fa fa-shopping-cart"></i>
+                  </a>
+                  <form action="{% url 'like:like_item' product_id=related_product.id %}"  method="post">
+                    {% csrf_token %}
+                    <a class="btn btn-outline-dark btn-square">
+                      <button type="submit" class="btn ">
+                        <i class="far fa-heart"></i>
+                      </button>
+                    </a>
+                  </form>
+                  
+                  <a class="btn btn-outline-dark btn-square" href="#"><i class="fas fa-sync-alt"></i></a> 
+                  <a class="btn btn-outline-dark btn-square" href="{{ related_product.get_url }}"><i class="fa fa-search"></i></a>
+                </div>
+              </div>
+              <div class="text-center py-4">
+                <a class="h6 text-decoration-none text-truncate" href="{{ related_product.get_url }}">{{ related_product.title }}</a>
+               
+                <div class="d-flex align-items-center justify-content-center mt-2" style='direction:rtl;'>
+                  {% if related_product.stock > 0 %}
+                    {% if related_product.discount == 0 %}
+                        <h4>{{ related_product.price|format_price }}</h4>
+                    {% else %}
+                        <h5>{{ related_product.discount_price|format_price }}</h5>
+                        <h6><del>{{ related_product.price|format_price }}</del></h6>
+                    {% endif %}
+                  {% else %}
+                    <h5 class="out-of-stock">
+                        😔 اتمام موجودی ❌
+                    </h5>
+                  {% endif %}
+                </div>
+                <div class="d-flex align-items-center justify-content-center mb-1">
+                  <span>
+                    <i class="fa fa-star{% if review.rating == 0.5 %}-half-o{% elif review.rating < 1 %}-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if review.rating == 1.5 %}-half-o{% elif review.rating < 2 %}-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if review.rating == 2.5 %}-half-o{% elif review.rating < 3 %}-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if review.rating == 3.5 %}-half-o{% elif review.rating < 4 %}-o {% endif %}" aria-hidden="true"></i>
+                    <i class="fa fa-star{% if review.rating == 4.5 %}-half-o{% elif review.rating < 5 %}-o {% endif %}" aria-hidden="true"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Products End -->
+    {% endblock main %}

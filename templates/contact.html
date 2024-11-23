@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+{% block main %}
+
+<style>
+    .contact-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+    }
+    
+    .contact-form form {
+        width: 100%;
+    }
+    
+    .contact-form .control-group {
+        margin-bottom: 1.5rem;
+        width: 100%;
+    }
+    
+    .contact-form .form-control {
+        width: 100%;
+        height: 40px;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border-radius: 0;
+        border: 1px solid #ced4da;
+    }
+    
+    .contact-form textarea.form-control {
+        height: auto;
+    }
+    
+    .contact-form .btn {
+        width: 100%;
+        height: 60px;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+        border-radius: 0;
+        cursor: pointer;
+    }
+    
+    .contact-form .btn:hover {
+        background-color: #0069d9;
+        border-color: #0062cc;
+    }
+    .form-control {
+        line-height: 1.15;
+    }
+
+    .mb-3, .my-3 {
+        direction: ltr;
+    }
+
+</style>
+<body>
+
+    <!-- Contact Start -->
+    <div class="container-fluid" style='direction:rtl'>
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">ارتباط با ما</span></h2>
+        <div class="row px-xl-5">
+            <div class="col-lg-7 mb-5">
+                <div class="contact-form bg-light p-30">
+                    <div id="success"></div>
+                    <form action="{% url 'connect:contact' %}" method="POST" id="contactForm" novalidate="novalidate">
+                        {% csrf_token %}
+                        <div class="control-group">
+                            <input type="text" name="name" class="form-control" id="name" placeholder="نام شما"
+                                   required="required" data-validation-required-message="لطفا نام خود را وارد کنید" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="email" name="email" class="form-control" id="email" placeholder="ایمیل شما"
+                                   required="required" data-validation-required-message="لطفا ایمیل خود را وارد کنید" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="text" name="title" class="form-control" id="subject" placeholder="موضوع"
+                                   required="required" data-validation-required-message="لطفا موضوع را وارد کنید" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <textarea name="message" class="form-control" rows="8" id="message" placeholder="پیام"
+                                      required="required" data-validation-required-message="لطفا پیام خود را وارد کنید"></textarea>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">ارسال پیام</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-5 mb-5">
+                <div class="bg-light p-30 mb-30">
+                    <iframe id="map" style="width: 100%; height: 250px;"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1029148.1464918884!2d51.36232813244029!3d35.70463374931175!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f8db1f2cf10b8f9%3A0xd4d7b8e60e601f7!2z2KfYp9rYqNiy2K3YqyDYr9mE2K3YqSA!5e0!3m2!1sen!2s!4v1632723160044!5m2!1sen!2s"
+                        frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+                </div>
+                <div class="bg-light p-30 mb-3"> 
+                    <p class="mb-2"><i class="fas fa-map-marker-alt text-primary mr-3">
+                        </i>ایران - گلستان - شهرستان کلاله</p>
+                    <p class="mb-2"><i class="fas fa-envelope text-primary mr-3">
+                        </i>hameddjf33@gmail.com</p> 
+                    <p class="mb-2"><i class="fas fa-phone-alt text-primary mr-3">
+                        </i>+98 09931835803</p> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Contact End -->
+</body>
+
+{% endblock main %}

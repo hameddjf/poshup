@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% load static %}
+{% load custom_tags %}
+{% block main %}
+    <!-- Shop Start -->
+    <style>
+        .badge-primary {
+            color: #212529;
+            background-color: #33f6ff;
+        }
+
+        @media (min-width: 992px) {
+            .col-lg-4 {
+                max-width: 25%;
+            }
+        }
+    </style>
+    <div class="container-fluid">
+        
+        <div class="row px-xl-5">
+            <!-- Shop Sidebar Start -->
+            
+                <!-- Shop Sidebar Start -->
+                <div class="col-lg-3 col-md-4">
+                    <!-- Price Start -->
+                    <div class="border-bottom mb-4 pb-4">
+                        <h5 class="font-weight-semi-bold mb-4">فیلتر بر اساس قیمت</h5>
+                        <form method="get" action="{% url 'store' %}">
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-3">
+                                <input type="checkbox" class="custom-control-input" {% if not selected_price_range %}checked{% endif %} id="price-all" name="price" value="">
+                                <label class="custom-control-label" for="price-all">تمامی قیمت ها</label>
+                                <span class="badge badge-primary badge-pill ml-auto">{{ product_count }}</span>
+                            </div>
+                            {% for price_range, count in price_ranges %}
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-3">
+                                <input type="checkbox" class="custom-control-input" id="price-{{ forloop.counter }}" name="price" value="{{ price_range }}"
+                                    {% if price_range in selected_price_range %}checked{% endif %}>
+                                <label class="custom-control-label" for="price-{{ forloop.counter }}">{{ price_range }}</label>
+                                <span class="badge badge-primary badge-pill ml-auto">{{ count }}</span>
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary btn-block">فیلتر</button>
+                        </form>
+                    </div>
+                    <!-- Price End -->
+            
+                    <!-- Color Start -->
+                    <div class="border-bottom mb-4 pb-4">
+                        <h5 class="font-weight-semi-bold mb-4">بر اساس رنگ</h5>
+                        <form method="get" action="{% url 'store' %}">
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-3">
+                                <input type="checkbox" class="custom-control-input" {% if not selected_colors %}checked{% endif %} id="color-all" name="color" value="">
+                                <label class="custom-control-label" for="color-all">همه رنگ ها</label>
+                                <span class="badge badge-primary badge-pill ml-auto">{{ product_count }}</span>
+                            </div>
+                            {% for color in all_colors %}
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-3">
+                                <input type="checkbox" class="custom-control-input" id="color-{{ color }}" name="color" value="{{ color }}"
+                                    {% if color|stringformat:"s" in selected_colors %}checked{% endif %}>
+                                <label class="custom-control-label" for="color-{{ color }}">{{ color }}</label>
+                                <span class="badge badge-primary badge-pill ml-auto">{{ color_product_counts|get_item:color }}</span>
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary btn-block">اعمال</button>
+                        </form>
+                    </div>
+                    <!-- Color End -->
+            
+                    <!-- Size Start -->
+                    <div class="mb-4 pb-4">
+                        <h5 class="font-weight-semi-bold mb-4">بر اساس اندازه</h5>
+                        <form method="get" action="{% url 'store' %}">
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-3">
+                                <input type="checkbox" class="custom-control-input" {% if not selected_sizes %}checked{% endif %} id="size-all" name="size" value="">
+                                <label class="custom-control-label" for="size-all">همه اندازه ها</label>
+                                <span class="badge badge-primary badge-pill ml-auto">{{ product_count }}</span>
+                            </div>
+                            {% for size in all_sizes %}
+                            <div class="custom-control custom-checkbox d-flex align-items-center mb-3">
+                                <input type="checkbox" class="custom-control-input" id="size-{{ size }}" name="size" value="{{ size }}"
+                                    {% if size|stringformat:"s" in selected_sizes %}checked{% endif %}>
+                                <label class="custom-control-label" for="size-{{ size }}">{{ size }}</label>
+                                <span class="badge badge-primary badge-pill ml-auto">{{ size_product_counts|get_item:size }}</span>
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary btn-block">اعمال</button>
+                        </form>
+                    </div>
+                    <!-- Size End -->
+                </div>
+                <!-- Shop Sidebar End -->
+
+
+            <!-- Shop Product Start -->
+            <div class="col-lg-9 col-md-8">
+                <div class="row pb-3">
+                    <div class="col-12 pb-1">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div>
+                                <button class="btn btn-sm btn-light"><i class="fa fa-th-large"></i></button>
+                                <button class="btn btn-sm btn-light ml-2"><i class="fa fa-bars"></i></button>
+                            </div>
+                            <div class="ml-2">
+                                <div class="btn-group">
+                                    {% if 'search' in request.path %}
+                                        <h2   h2 class='title-page'> نتیجه سرچ</h2>
+                                    {% endif %}
+                                </div> 
+                                
+                                <div class="btn-group" >
+                                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">مرتب‌سازی</button>
+                                    <div class="dropdown-menu dropdown-menu-right" style='direction:ltr;'>
+                                        <a class="dropdown-item {% if not sort %}active{% endif %}" href="?">همه</a>
+                                        <a class="dropdown-item {% if sort == 'latest' %}active{% endif %}" href="?sort=latest">جدیدترین</a>
+                                        <a class="dropdown-item {% if sort == 'min_price' %}active{% endif %}" href="?sort=min_price">کمترین قیمت</a>
+                                        <a class="dropdown-item {% if sort == 'max_price' %}active{% endif %}" href="?sort=max_price">بیشترین قیمت</a>
+                                        <a class="dropdown-item {% if sort == 'most_discount' %}active{% endif %}" href="?sort=most_discount">بیشترین تخفیف</a>
+                                    </div>
+                                </div>
+                                
+                                <div class="btn-group ml-2">
+                                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">تعداد نمایش</button>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" href="?page_size=10">12</a>
+                                        <a class="dropdown-item" href="?page_size=20">24</a>
+                                        <a class="dropdown-item" href="?page_size=30">36</a>
+                                    </div>
+                                </div>
+                                <div class="btn-group">
+                                    <span class="mr-md-auto"><b class="btn btn-sm btn-light" >{{ product_count }} </b> : محصولات پیدا شده </span>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                    {% if products %}
+                        {% for product in products %}
+                        <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+                            <div class="product-item bg-light mb-4">
+                                <div class="product-img position-relative overflow-hidden">
+                                    <img class="img-fluid w-100" src="{{product.image.url}}" alt="">
+                                    <div class="product-action">
+
+
+
+                                        {% if product.stock >= 1 %}
+                                            <a class="btn btn-outline-dark btn-square" href="{% url "cart:add_to_cart_page" product.id %}"><i class="fa fa-shopping-cart"></i></a>
+                                        {% else %}
+                                            <a class="btn btn-outline-dark btn-square" href="{{ product.get_url }}"><i class="fa fa-shopping-cart"></i></a>
+                                        {% endif %} 
+
+                                        
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href="{{product.get_url}}"><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                <div class="text-center py-4">
+                                    <a class="h6 text-decoration-none text-truncate" href="{{product.get_url}}">{{product.title}}</a>
+                                    <div class="d-flex align-items-center justify-content-center mt-2" style='direction:rtl;'>
+                                        {% if product.discount == 0 %}
+                                            <h5>{{product.price|format_price}}</h5>
+                                        {% else %}
+                                            <h5>{{product.discount_price|format_price}}</h5>
+                                        {% comment %} <h5>%{{product.discount}}</h5>   نمایش درصد تخفیف    {% endcomment %}
+                                            <h6 class="text-muted ml-2"><del>{{product.price|format_price}}</del></h6>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center mb-1">
+                                        <small class="fa fa-star text-primary mr-1"></small>
+                                        <small class="fa fa-star text-primary mr-1"></small>
+                                        <small class="fa fa-star text-primary mr-1"></small>
+                                        <small class="fa fa-star text-primary mr-1"></small>
+                                        <small class="fa fa-star text-primary mr-1"></small>
+                                    </div>
+                                    <small>موجودی : ({{product.stock}}) عدد</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div>
+                            <h2>موردی پیدا نشد</h2>
+                        </div>
+                    {% endif %}
+                    <div class="col-12">
+                        <nav>
+                            {% if page_obj.has_other_pages %}
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">قبلی</a></li>
+                                {% else %}
+                                    <li class="page-item disabled"><a class="page-link" href="#">قبلی</a></li>
+                                {% endif %}
+                        
+                                {% for i in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == i %}
+                                        <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                        
+                                {% if page_obj.has_next %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">بعدی</a></li>
+                                {% else %}
+                                    <li class="page-item disabled"><a class="page-link" href="#">بعدی</a></li>
+                                {% endif %}
+                            </ul>
+                        {% endif %}
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <!-- Shop Product End -->
+        </div>
+    </div>
+    <!-- Shop End -->
+
+{% endblock main %}
