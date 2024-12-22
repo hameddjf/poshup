@@ -14,8 +14,7 @@ from carts.models import CartItem
 
 @receiver(post_save, sender=Bank)
 def create_or_update_payment_on_bank_record_change(sender, instance, created, **kwargs):
-    logging.info(f"Bank record {
-                 'created' if created else 'updated'}: {instance.id}")
+    logging.info(f"Bank record {'created' if created else 'updated'}: {instance.id}")
     try:
         order = Order.objects.get(bank_record=instance)
         payment, created = Payment.objects.get_or_create(
@@ -35,8 +34,7 @@ def create_or_update_payment_on_bank_record_change(sender, instance, created, **
             f"Payment {'created' if created else 'updated'} for order {order.id}")
 
     except Order.DoesNotExist:
-        logging.error(f"Order not found for bank record {
-                      instance.tracking_code}")
+        logging.error(f"Order not found for bank record {instance.tracking_code}")
     except Exception as e:
         logging.error(
             f"Error in create_or_update_payment_on_bank_record_change: {str(e)}")
